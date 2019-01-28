@@ -1,0 +1,59 @@
+version: '2'
+
+networks:
+  network:
+    driver: bridge
+
+services:
+  stats:
+    image: rabbitmq_custom
+    environment:
+      - RABBITMQ_NODE_TYPE=stats
+      - RABBITMQ_NODE_NAME=rabbit@stats
+      - RABBITMQ_ERL_COOKIE=PWD
+      - RABBITMQ_PASSWORD=PWD
+    networks:
+      - network
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    volumes:
+      - 'stats_data:/bitnami'
+  disc1:
+    image: rabbitmq_custom
+    environment:
+      - RABBITMQ_NODE_TYPE=queue-disc
+      - RABBITMQ_NODE_NAME=rabbit@disc1
+      - RABBITMQ_CLUSTER_NODE_NAME=rabbit@stats
+      - RABBITMQ_ERL_COOKIE=PWD
+      - RABBITMQ_PASSWORD=PWD
+    networks:
+      - network
+    labels:
+      kompose.service.type: nodeport
+    volumes:
+      - 'disc1_data:/bitnami'
+  ram1:
+    image: rabbitmq_custom
+    environment:
+      - RABBITMQ_NODE_TYPE=queue-ram
+      - RABBITMQ_NODE_NAME=rabbit@ram1
+      - RABBITMQ_CLUSTER_NODE_NAME=rabbit@stats
+      - RABBITMQ_ERL_COOKIE=PWD
+      - RABBITMQ_PASSWORD=PWD
+    networks:
+      - network
+    labels:
+      kompose.service.type: nodeport
+    volumes:
+      - 'ram1_data:/bitnami'
+
+volumes:
+  stats_data:
+    driver: local
+  disc1_data:
+    driver: local
+  ram1_data:
+    driver: local

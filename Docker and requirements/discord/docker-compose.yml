@@ -1,0 +1,33 @@
+version: '2'
+
+networks:
+  redis_network:
+    external: true
+  rabbitmq_network:
+    external: true
+  network:
+    driver: bridge
+
+services:
+  howob:
+    image: 'httpd'
+    container_name: cdn_discord
+    volumes:
+        - /usr/share/discord_image/images/:/usr/local/apache2/htdocs/
+    networks:
+      - redis_network
+      - rabbitmq_network
+      - network
+    ports:
+      - '5555:80'
+
+
+  docker:
+    image: discord_py
+    container_name: discord_bot
+    networks:
+      - network
+      - rabbitmq_network
+      - redis_network
+    volumes:
+        - /usr/share/discord_image/images/:/usr/src/app/images

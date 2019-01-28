@@ -1,0 +1,19 @@
+version: '2'
+
+networks:
+  redis_network:
+    external: true
+  rabbitmq_network:
+    external: true
+  network:
+    driver: bridge
+
+services:
+  howob:
+    image: 'api:latest'
+    networks:
+      - redis_network
+      - rabbitmq_network
+      - network
+    ports:
+      - '5000:5000'

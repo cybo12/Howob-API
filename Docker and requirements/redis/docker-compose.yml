@@ -1,0 +1,42 @@
+version: '2'
+
+networks:
+  network:
+    driver: bridge
+
+services:
+  master:
+    image: 'bitnami/redis:latest'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=PWD
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    networks:
+      - network
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'data:/bitnami/redis'
+  slave:
+    image: 'bitnami/redis:latest'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_MASTER_PASSWORD=PWD
+      - REDIS_PASSWORD=PWD
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    networks:
+      - network
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - '6380:6379'
+
+volumes:
+  data:
+    driver: local

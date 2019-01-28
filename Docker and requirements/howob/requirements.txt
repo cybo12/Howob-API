@@ -1,0 +1,8 @@
+flask 
+flask-RestFul
+redis  
+ansicolors 
+requests 
+pika
+python-twitter
+pyspeedtest
